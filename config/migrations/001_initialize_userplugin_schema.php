@@ -60,7 +60,7 @@ class M4bd15c6a82a84a00bda70fa766eab0dd extends CakeMigration {
 					),
 					'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'MyISAM'),
 				),
-				'user_groups' => array(
+				'userplugin_user_groups' => array(
 					'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
 					'name' => array('type' => 'string', 'null' => false, 'default' => NULL),
 					'indexes' => array(
@@ -68,7 +68,7 @@ class M4bd15c6a82a84a00bda70fa766eab0dd extends CakeMigration {
 					),
 					'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
 				),
-				'users' => array(
+				'userplugin_users' => array(
 					'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 10, 'key' => 'primary'),
 					'user_group_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10),
 					'username' => array('type' => 'string', 'null' => false, 'default' => NULL),
@@ -87,7 +87,7 @@ class M4bd15c6a82a84a00bda70fa766eab0dd extends CakeMigration {
 		),
 		'down' => array(
 			'drop_table' => array(
-				'acos', 'aros', 'aros_acos', 'user_groups', 'users'
+				'acos', 'aros', 'aros_acos', 'userplugin_user_groups', 'userplugin_users'
 			),
 		),
 	);
@@ -111,7 +111,47 @@ class M4bd15c6a82a84a00bda70fa766eab0dd extends CakeMigration {
  * @access public
  */
 	public function after($direction) {
+		if ($direction == 'up') {
+			$Aro = $this->generateModel('Aro');
+			$Aro->Behaviors->attach('Tree');
+			$Aro->save(array('alias' => 'UserGroups'));
+			$Aco = $this->generateModel('Aco');
+			$Aco->Behaviors->attach('Tree');
+			$Aco->create(array('alias' => 'controllers'));
+			$Aco->save();
+			$root = $Aco->id;
+			$controllers = $this->_getControllerNames();
+			foreach ($controllers as $controller) {
+				$Aco->create(array('alias' => $controller, 'parent_id' => $root));
+				$Aco->save();
+			}
+			$plugins = App::objects('plugin');
+			foreach ($plugins as $plugin) {
+				$Aco->create(array('alias' => $plugin, 'parent_id' => $root));
+				$Aco->save();
+				$pluginId = $Aco->id;
+				$controllers = $this->_getControllerNames($plugin);
+				foreach ($controllers as $controller) {
+					$Aco->create(array('alias' => $controller, 'parent_id' => $pluginId));
+					$Aco->save();
+				}
+			}
+		}
 		return true;
 	}
+
+	private function _getControllerNames($plugin = null) {
+		$path = null;
+		if ($plugin) {
+			$path = App::pluginPath($plugin) . 'controllers' . DS;
+		}
+		$controllers = App::objects('controller', $path, false);
+		$appKey = array_search($plugin . 'App', $controllers);
+		if (is_int($appKey)) {
+			unset($controllers[$appKey]);
+		}
+		return $controllers;
+	}
+
 }
 ?>
