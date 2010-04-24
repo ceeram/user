@@ -6,8 +6,8 @@ class UsersController extends UserAppController {
 
 	function beforeFilter() {
 		parent::beforeFilter();
-		//$this->Auth->actionMap = array('showRights' => 'read');
-		$this->Auth->allow();
+		$this->Auth->actionMap = array('showRights' => 'read');
+		//$this->Auth->allow();
 	}
 
 	function add() {
