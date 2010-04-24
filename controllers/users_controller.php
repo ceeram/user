@@ -6,17 +6,21 @@ class UsersController extends UserAppController {
 
 	function beforeFilter() {
 		parent::beforeFilter();
+		//$this->Auth->actionMap = array('showRights' => 'read');
 		$this->Auth->allow();
 	}
 
 	function add() {
 		if (!empty($this->data)) {
+			$this->data['User']['password_confirm_hash'] = $this->Auth->password($this->data['User']['password_confirm']);
 			$this->User->create();
 			if ($this->User->save($this->data)) {
 				$this->Acl->allow($this->User, $this->User, array('create', 'read', 'update'));
 				$this->Session->setFlash(sprintf(__('The %s has been saved', true), 'user'));
 				$this->redirect(array('action' => 'index'));
 			} else {
+				unset($this->data['User']['password']);
+				unset($this->data['User']['password_confirm']);
 				$this->Session->setFlash(sprintf(__('The %s could not be saved. Please, try again.', true), 'user'));
 			}
 		}

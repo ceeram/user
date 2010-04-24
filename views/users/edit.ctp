@@ -4,12 +4,11 @@
  		<legend><?php printf(__('Edit %s', true), __('User', true)); ?></legend>
 	<?php
 		echo $this->Form->input('id');
-		echo $this->Form->input('user_group_id');
 		echo $this->Form->input('username');
-		echo $this->Form->input('password');
 		echo $this->Form->input('email');
-		echo $this->Form->input('active');
-		echo $this->Form->input('last_login');
+		echo $this->Form->input('email_confirm');
+		echo $this->Html->tag('label', 'Last login');
+		echo isset($this->data['User']['last_login']) ? $this->data['User']['last_login'] : 'never';
 	?>
 	</fieldset>
 <?php echo $this->Form->end(__('Submit', true));?>
