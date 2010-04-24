@@ -7,7 +7,9 @@ class AuclShell extends Shell {
 	}
 
 	function init() {
-		$this->Aro->save(array('alias' => 'UserGroups'));
+		if ($this->Aro->find('first', array('conditions' => array('Aro.alias' => 'UserGroups', 'Aro.parent_id' => null)))) {
+			$this->Aro->save(array('alias' => 'UserGroups'));
+		}
 		$groups = array(
 			array('name' => 'admins'),
 			array('name' => 'mods'),
