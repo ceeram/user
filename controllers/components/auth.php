@@ -559,7 +559,7 @@ class AuthComponent extends Object {
 				}
 				if (!isset($this->actionMap[$this->params['action']])) {
 					trigger_error(
-						sprintf(__('Aucl::startup() - Attempted access of un-mapped action "%1$s" in controller "%2$s"', true), $this->params['action'], $this->params['controller']),
+						sprintf(__('Auth::startup() - Attempted access of un-mapped action "%1$s" in controller "%2$s"', true), $this->params['action'], $this->params['controller']),
 						E_USER_WARNING
 					);
 				} else {
@@ -579,7 +579,7 @@ class AuthComponent extends Object {
 				return true;
 			break;
 			default:
-				trigger_error(__('Aucl::isAuthorized() - $authorize is set to an incorrect value.  Allowed settings are: "actions", "crud", "model" or null.', true), E_USER_WARNING);
+				trigger_error(__('Auth::isAuthorized() - $authorize is set to an incorrect value.  Allowed settings are: "actions", "crud", "model" or null.', true), E_USER_WARNING);
 			break;
 		}
 		return $valid;
